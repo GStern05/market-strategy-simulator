@@ -55,7 +55,7 @@ Takes price data + strategy's signals, and simulates holding positions and tradi
 
 Pure calculations on returns/equity curves — Sharpe ratio, volatility, maximum drawdown, etc. Doesn't know about strategies, backtesting mechanics, or simulations — just takes numbers in, gives numbers out. Reused in three places: once on the historical baseline, once per simulation, and again when summarising the distribution of thousands of results
 
-## simulations/
+## simulation/
 
 Take real historical returns, generate a fake-but-realistic alternative history (block bootstrap), and orchestrate running that alternative history through the backtest engine, thousands of times.
 
