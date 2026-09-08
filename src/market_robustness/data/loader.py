@@ -9,4 +9,6 @@ def load_price_data(ticker: str, start: str, end: str) -> pd.DataFrame:
     df.columns = df.columns.droplevel('Ticker')
     if df.isna().sum().sum() != 0:
         raise ValueError(f"Missing values found in data for ticker '{ticker}'")
+    if not df.index.is_monotonic_increasing:
+        raise ValueError(f"Data for ticker '{ticker}' is not in chronological order")
     return df
