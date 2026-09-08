@@ -7,4 +7,6 @@ def load_price_data(ticker: str, start: str, end: str) -> pd.DataFrame:
     if df.empty:
         raise ValueError(f"No data found for ticker '{ticker}'")
     df.columns = df.columns.droplevel('Ticker')
+    if df.isna().sum().sum() != 0:
+        raise ValueError(f"Missing values found in data for ticker '{ticker}'")
     return df
