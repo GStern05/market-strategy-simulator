@@ -51,3 +51,37 @@ def test_load_price_data_raises_on_unsorted_dates(mocker):
         market_robustness.data.loader.load_price_data(
             "AAPL", "2026-01-01", "2026-06-01"
         )
+
+def test_load_price_data_raises_on_invalid_ticker(mocker):
+    fake_df = pd.DataFrame()  # empty DataFrame simulates a bad ticker
+    mocker.patch(
+        "market_robustness.data.loader.yf.download", return_value=fake_df
+    )
+
+    with pytest.raises(ValueError):
+        market_robustness.data.loader.load_price_data(
+            "ZZZZZZ", "2026-01-01", "2026-06-01"
+        )
+
+def test_load_price_data_returns_flattened_columns_for_valid_ticker(mocker):
+    fake_df = pd.DataFrame(
+        {
+            ("Close", "AAPL"): [150.0, 151.0],
+            ("High", "AAPL"): [151.0, 152.0],
+            ("Low", "AAPL"): [149.0, 150.0],
+            ("Open", "AAPL"): [150.5, 151.5],
+            ("Volume", "AAPL"): [1000, 1100],
+        },
+        index=pd.to_datetime(["2026-01-01", "2026-01-06"])
+    )
+    fake_df.columns = pd.MultiIndex.from_tuples(
+    fake_df.columns, names=["Price", "Ticker"]
+    )
+
+    mocker.patch(
+        "market_robustness.data.loader.yf.download", return_value=fake_df
+    )
+    result = market_robustness.data.loader.load_price_data(
+    "AAPL", "2026-01-01", "2026-06-01"
+    )
+    assert list(result.columns) == ["Close","High","Low","Open","Volume"]
