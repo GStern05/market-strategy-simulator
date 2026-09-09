@@ -20,8 +20,20 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ​``` 
 
+## Running Tests
+
+```
+pytest -v
+
+```
+
 ## Status
 
-This project is in early stages. The development environment (Git, virtual environment, dependency management, testing, linting, and type checking) is set up, but no simulation or trading logic has been implemented yet.
-
+The development environment (Git, virtual environment, dependency
+management, testing, linting, and type checking) is set up. The
+data-loading component is implemented: it fetches historical price
+data, validates it (rejecting invalid tickers, missing values, and
+non-chronological data), and calculates daily returns. This is
+covered by a test suite using mocked data. No trading strategy or
+backtesting logic has been implemented yet.
 
