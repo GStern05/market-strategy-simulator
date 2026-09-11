@@ -19,5 +19,3 @@ class Strategy(ABC):
             A pd.Series, indexed by the same dates as price_data, where
             each value is 1 (long/buy), 0 (hold/flat), or -1 (short/sell).
         """
-
-
