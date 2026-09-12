@@ -1,5 +1,5 @@
-import yfinance as yf
 import pandas as pd
+import yfinance as yf
 
 
 def load_price_data(ticker: str, start: str, end: str) -> pd.DataFrame:
