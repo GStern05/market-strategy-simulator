@@ -15,7 +15,7 @@ def calculate_portfolio_returns(positions: pd.Series, stock_returns: pd.Series) 
     """
     Calculate daily portfolio returns from held positions and stock returns.
     """
-    return positions * stock_returns
+    return positions * stock_returns.fillna(0)
 
 
 def calculate_portfolio_value(portfolio_returns: pd.Series, initial_capital: float) -> pd.Series:
