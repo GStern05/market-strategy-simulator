@@ -57,8 +57,18 @@ def run_monte_carlo_simulation(
     initial_capital: float,
 ) -> list[dict[str, Any]]:
     simulations: list[dict[str, Any]] = []
+    degenerate_count = 0
+
     for i in range(n_simulations):
-        simulations.append(
-            run_single_simulation(returns, block_size, i, i, strategy, initial_capital)
+        result = run_single_simulation(returns, block_size, i, i, strategy, initial_capital)
+        if np.isnan(result["sharpe_ratio"]) or np.isnan(result["win_rate"]):
+            degenerate_count += 1
+        simulations.append(result)
+
+    if degenerate_count > 0:
+        print(
+            f"Warning: {degenerate_count} out of {n_simulations} simulations "
+            f"produced degenerate metrics (nan sharpe_ratio or win_rate)."
         )
+
     return simulations
