@@ -1,6 +1,7 @@
 from typing import Any
 
 import pandas as pd
+import numpy as np
 
 from market_robustness.backtest.engine import run_backtest
 from market_robustness.metrics.metrics import (
