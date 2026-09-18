@@ -1,5 +1,6 @@
-import pandas as pd
 from typing import Any
+
+import pandas as pd
 
 
 def simulations_to_dataframe(simulations: list[dict[str, Any]]) -> pd.DataFrame:
