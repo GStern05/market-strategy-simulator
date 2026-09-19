@@ -66,9 +66,8 @@ def test_run_historical_baseline_values_correct_on_known_data(mocker, sample_str
         "win_rate": win_rate(expected_backtest["positions"], expected_backtest["portfolio_returns"]),
     }
 
-    for key in expected:
-        assert result[key] == pytest.approx(expected[key], nan_ok=True)
-
+    for key, value in expected.items():
+        assert result[key] == pytest.approx(value, nan_ok=True)
         
 def test_run_historical_baseline_calls_dependencies_correctly(mocker, sample_strategy):
     dates = pd.date_range("2024-01-01", periods=10, freq="D")

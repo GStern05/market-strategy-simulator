@@ -32,4 +32,45 @@ def analyse_distribution(df: pd.DataFrame, historical_return: float) -> dict[str
      result["probability_of_loss"] = probability_of_loss(df)
      result["probability_exceeding_historical"] = probability_of_exceeding_historical(df, historical_return)
      return result
-     
+
+def percentile_rank(df: pd.DataFrame, historical_value: float, column: str = "cumulative_return") -> float:
+    """Calculates the percentile rank of the historical value: the fraction
+    of simulations that performed the same as or worse than it."""
+    return 1 - probability_of_exceeding_historical(df, historical_value, column)
+
+def classify_performance(rank: float) -> str:
+    if rank <= 0.05:
+        return "unusually poor"
+    elif rank <= 0.25:
+        return "poor"
+    elif rank <= 0.75:
+        return "typical"
+    elif rank <= 0.95:
+        return "good"
+    else:
+        return "unusually good"
+
+
+
+def compare_historical_to_simulated(historical: dict, df: pd.DataFrame) -> dict:
+    metrics = [
+        "cumulative_return",
+        "final_portfolio_value",
+        "annualised_return",
+        "annualised_volatility",
+        "sharpe_ratio",
+        "maximum_drawdown",
+        "number_of_trades",
+        "win_rate",
+    ]
+
+    result: dict[str, Any] = {}
+    for metric in metrics:
+        rank = percentile_rank(df, historical[metric], metric)
+        result[metric] = {
+            "historical_value": historical[metric],
+            "percentile_rank": rank,
+            "classification": classify_performance(rank),
+        }
+
+    return result
