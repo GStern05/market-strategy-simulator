@@ -88,16 +88,16 @@ def test_percentile_rank(sample_simulations_df):
     assert result == pytest.approx(0.3)
 
 def test_classify_performance_boundaries():
-    assert classify_performance(0.0) == "unusually poor"
-    assert classify_performance(0.05) == "unusually poor"
-    assert classify_performance(0.06) == "poor"
-    assert classify_performance(0.25) == "poor"
+    assert classify_performance(0.0) == "unusually low"
+    assert classify_performance(0.05) == "unusually low"
+    assert classify_performance(0.06) == "low"
+    assert classify_performance(0.25) == "low"
     assert classify_performance(0.26) == "typical"
     assert classify_performance(0.75) == "typical"
-    assert classify_performance(0.76) == "good"
-    assert classify_performance(0.95) == "good"
-    assert classify_performance(0.96) == "unusually good"
-    assert classify_performance(1.0) == "unusually good"
+    assert classify_performance(0.76) == "high"
+    assert classify_performance(0.95) == "high"
+    assert classify_performance(0.96) == "unusually high"
+    assert classify_performance(1.0) == "unusually high"
 
 
 def test_compare_historical_to_simulated_returns_expected_structure(sample_simulations_df):

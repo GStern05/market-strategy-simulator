@@ -40,15 +40,15 @@ def percentile_rank(df: pd.DataFrame, historical_value: float, column: str = "cu
 
 def classify_performance(rank: float) -> str:
     if rank <= 0.05:
-        return "unusually poor"
+        return "unusually low"
     elif rank <= 0.25:
-        return "poor"
+        return "low"
     elif rank <= 0.75:
         return "typical"
     elif rank <= 0.95:
-        return "good"
+        return "high"
     else:
-        return "unusually good"
+        return "unusually high"
 
 
 
