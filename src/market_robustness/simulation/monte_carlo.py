@@ -1,3 +1,5 @@
+from functools import partial
+from multiprocessing import Pool
 from typing import Any
 
 import numpy as np
@@ -50,7 +52,16 @@ def run_single_simulation(
     }
 
 
-def run_monte_carlo_simulation(
+def _simulation_worker(
+    seed: int,
+    returns: pd.Series,
+    block_size: int,
+    strategy: Any,
+    initial_capital: float,
+) -> dict[str, Any]:
+    return run_single_simulation(returns, block_size, seed, seed, strategy, initial_capital)
+
+def run_monte_carlo_simulation_serial(
     returns: pd.Series,
     block_size: int,
     n_simulations: int,
@@ -65,6 +76,39 @@ def run_monte_carlo_simulation(
         if np.isnan(result["sharpe_ratio"]) or np.isnan(result["win_rate"]):
             degenerate_count += 1
         simulations.append(result)
+
+    if degenerate_count > 0:
+        print(
+            f"Warning: {degenerate_count} out of {n_simulations} simulations "
+            f"produced degenerate metrics (nan sharpe_ratio or win_rate)."
+        )
+
+    return simulations
+
+def run_monte_carlo_simulation_parallel(
+    returns: pd.Series,
+    block_size: int,
+    n_simulations: int,
+    strategy: Any,
+    initial_capital: float,
+    n_workers: int,
+) -> list[dict[str, Any]]:
+    worker = partial(
+        _simulation_worker,
+        returns=returns,
+        block_size=block_size,
+        strategy=strategy,
+        initial_capital=initial_capital
+    )
+
+    with Pool(processes=n_workers) as pool:
+        simulations = pool.map(worker, range(n_simulations))
+
+    degenerate_count = sum(
+        1
+        for result in simulations
+        if np.isnan(result["sharpe_ratio"]) or np.isnan(result["win_rate"])
+    )
 
     if degenerate_count > 0:
         print(

@@ -4,8 +4,9 @@ import pytest
 
 from market_robustness.simulation.monte_carlo import (
     returns_to_prices,
-    run_monte_carlo_simulation,
-    run_single_simulation,
+    run_monte_carlo_simulation_serial,
+    run_monte_carlo_simulation_parallel,
+    run_single_simulation
 )
 from market_robustness.strategy.moving_average import MovingAverageStrategy
 
@@ -63,44 +64,81 @@ def test_run_single_simulation_records_correct_id_and_seed(sample_returns, sampl
         seed=7,
         simulation_id=3,
         strategy=sample_strategy,
-        initial_capital=10000,
+        initial_capital=10000
     )
     assert result["simulation_id"] == 3
     assert result["seed"] == 7
 
 
-def test_run_monte_carlo_simulation_returns_correct_number_of_results(
+def test_run_monte_carlo_simulation_returns_correct_number_of_results_parallel(
     sample_returns, sample_strategy
 ):
-    results = run_monte_carlo_simulation(
+    results = run_monte_carlo_simulation_parallel(
         sample_returns,
         block_size=20,
         n_simulations=10,
         strategy=sample_strategy,
         initial_capital=10000,
+        n_workers = 3
+    )
+    assert len(results) == 10
+
+def test_run_monte_carlo_simulation_returns_correct_number_of_results_serial(
+    sample_returns, sample_strategy
+):
+    results = run_monte_carlo_simulation_serial(
+        sample_returns,
+        block_size=20,
+        n_simulations=10,
+        strategy=sample_strategy,
+        initial_capital=10000
     )
     assert len(results) == 10
 
 
-def test_run_monte_carlo_simulation_uses_distinct_seeds(sample_returns, sample_strategy):
-    results = run_monte_carlo_simulation(
+def test_run_monte_carlo_simulation_uses_distinct_seeds_parallel(sample_returns, sample_strategy):
+    results = run_monte_carlo_simulation_parallel(
         sample_returns,
         block_size=20,
         n_simulations=10,
         strategy=sample_strategy,
         initial_capital=10000,
+        n_workers = 3
     )
     seeds = [r["seed"] for r in results]
     assert seeds == list(range(10))
 
+def test_run_monte_carlo_simulation_uses_distinct_seeds_serial(sample_returns, sample_strategy):
+    results = run_monte_carlo_simulation_serial(
+        sample_returns,
+        block_size=20,
+        n_simulations=10,
+        strategy=sample_strategy,
+        initial_capital=10000
+    )
+    seeds = [r["seed"] for r in results]
+    assert seeds == list(range(10))
 
-def test_run_monte_carlo_simulation_produces_varying_results(sample_returns, sample_strategy):
-    results = run_monte_carlo_simulation(
+def test_run_monte_carlo_simulation_produces_varying_results_parallel(sample_returns, sample_strategy):
+    results = run_monte_carlo_simulation_parallel(
         sample_returns,
         block_size=20,
         n_simulations=10,
         strategy=sample_strategy,
         initial_capital=10000,
+        n_workers =3
+    )
+    cumulative_returns = [r["cumulative_return"] for r in results]
+    assert len(set(cumulative_returns)) > 1
+
+
+def test_run_monte_carlo_simulation_produces_varying_results_serial(sample_returns, sample_strategy):
+    results = run_monte_carlo_simulation_serial(
+        sample_returns,
+        block_size=20,
+        n_simulations=10,
+        strategy=sample_strategy,
+        initial_capital=10000
     )
     cumulative_returns = [r["cumulative_return"] for r in results]
     assert len(set(cumulative_returns)) > 1
